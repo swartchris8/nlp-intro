@@ -11,3 +11,20 @@ docker ps -a
 docker cp nlp-intro.ipynb $CONTAINER_ID:/home/jovyan/work
 ```
 4, Open the jupyter notebook in your browser and navigate to the work directory to open the jupyter notebook.
+
+### Troubleshooting
+
+If your Jupyter Notebook requires a token. Stop the image and rerun the docker setup.
+
+### Clean up docker env
+
+
+1, Delete all containers:
+```
+docker rm $(docker ps -a -q)
+```
+
+2, If you would like to delete all images:
+```
+docker rmi $(docker images -q)
+```
