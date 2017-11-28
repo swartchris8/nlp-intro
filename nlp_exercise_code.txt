@@ -1,0 +1,114 @@
+1. Import the data
+
+import pandas as pd
+
+tweets = pd.read_csv("trump-obama-tweets - Sheet1.csv")
+tweets
+
+2. Create the training and test sets
+
+def clean(tweet):
+  #stopwords = ["a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also","although","always","am","among", "amongst", "amoungst", "amount",  "an", "and", "another", "any","anyhow","anyone","anything","anyway", "anywhere", "are", "around", "as",  "at", "back","be","became", "because","become","becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom","but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven","else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own","part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thickv", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "the"]
+  
+  stopwords = []
+  tweet = tweet.lower()
+  for stopword in stopwords:
+    tweet = tweet.replace(" " + stopword + " "," ")
+  return tweet
+
+obama_training_tweets = []
+trump_training_tweets = []
+obama_test_tweets = []
+trump_test_tweets = []
+
+for row in tweets.itertuples():
+    if (row[0] < 15 and row[1] == 'Obama'):
+        obama_training_tweets.append(clean(row[2]))
+    elif (row[0] > 14 and row[1] == 'Obama'):
+        obama_test_tweets.append(clean(row[2]))
+    elif (row[0] < 6 and row[1] == 'Trump'):
+        trump_training_tweets.append(clean(row[2]))
+    elif (row[0] > 5 and row[1] == 'Trump'):
+        trump_test_tweets.append(clean(row[2]))
+        
+        
+
+print("Obama Training:")
+print(obama_training_tweets)
+print("Obama Test:")
+print(obama_test_tweets)
+print("")
+print("Trump Training:")
+print(trump_training_tweets)
+print("Trump Test:")
+print(trump_test_tweets)
+
+
+4.1 Naive Bayes Learning
+
+def p_word(training_tweets, learnings):
+  all_tweets = ""
+  for tweet in training_tweets:
+    all_tweets = all_tweets + " " + tweet
+  
+  words = all_tweets.split()
+  for word in words:
+    learnings[word] = ( float(words.count(word))) / float(len(words))
+  return learnings;
+
+obama_learnings = {}
+trump_learnings = {}
+
+p_word(obama_training_tweets, obama_learnings)
+    
+p_word(trump_training_tweets, trump_learnings)
+   
+print("Obama learning")    
+print(obama_learnings)
+print("Trump learning")    
+print(trump_learnings)
+
+
+4.2 Naive Bayes Likelihood
+
+def p_likelihood(tweet, learnings):
+  likelihood = 1.0;
+  for word in tweet.split():
+    likelihood = likelihood * (learnings.get(word,0.0));
+  return likelihood;
+
+
+5 Naive Bayes Classification
+
+def print_result(predicted_author, predicted_author_bayes_probability, other_author_bayes_probability):
+  percent = predicted_author_bayes_probability / (other_author_bayes_probability + predicted_author_bayes_probability) * 100.0
+  print("predicted author: {:0.2f}".format(percent) + "% " + predicted_author)
+
+def classify(author, tweet, obama_learnings, trump_learnings):
+  obama_probability = 0.5 #half of our 'known' tweets are obama.
+  obama_likelihood = p_likelihood(tweet, obama_learnings)
+  obama_bayes_probability = obama_probability * obama_likelihood
+
+  trump_probability = 0.5 #half of our 'known' tweets are obama.
+  trump_likelihood = p_likelihood(tweet, trump_learnings)
+  trump_bayes_probability = trump_probability * trump_likelihood
+    
+  
+  print('"' + tweet + '"')
+  print("actual author: " + author)
+
+  if obama_bayes_probability > trump_bayes_probability:
+    print_result("Obama", obama_bayes_probability, trump_bayes_probability)
+  elif obama_bayes_probability < trump_bayes_probability:
+    print_result("Trump", trump_bayes_probability, obama_bayes_probability)
+  else:
+    print("Trump or Obama - equal probability: {:0.2f} {:0.2f}".format(obama_bayes_probability, trump_bayes_probability))
+  print("")
+
+#classify the Obama test tweets
+for tweet in obama_test_tweets:
+  classify("Obama", tweet, obama_learnings, trump_learnings)
+
+#classify the Trump test tweets
+for tweet in trump_test_tweets:
+  classify("Trump", tweet, obama_learnings, trump_learnings)
