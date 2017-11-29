@@ -5,10 +5,10 @@
 docker pull jupyter/datascience-notebook
 docker run -it --rm -p 8888:8888 jupyter/datascience-notebook
 ```
-3, Let's move the notebook to the docker machine:
+3, Let's move this repo's content to the docker machine:
 ```
 docker ps -a
-docker cp nlp-intro.ipynb $CONTAINER_ID:/home/jovyan/work
+docker cp . $CONTAINER_ID:/home/jovyan/work
 ```
 4, Open the jupyter notebook in your browser and navigate to the work directory to open the jupyter notebook.
 
