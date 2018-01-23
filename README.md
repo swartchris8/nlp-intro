@@ -1,4 +1,7 @@
 ### Setup
+
+#### Setup with docker
+
 1, clone this git repository
 2, Install docker and pull the data science docker image running the below commands:
 ```
@@ -11,6 +14,10 @@ docker ps -a
 docker cp . $CONTAINER_ID:/home/jovyan/work
 ```
 4, Open the jupyter notebook in your browser and navigate to the work directory to open the jupyter notebook.
+
+#### Setup with Python
+
+Install requirements.txt on a Python 3.6 environment.
 
 ### Troubleshooting
 
